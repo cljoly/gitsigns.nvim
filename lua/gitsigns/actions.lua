@@ -8,6 +8,7 @@ local util = require('gitsigns.util')
 local manager = require('gitsigns.manager')
 local git = require('gitsigns.git')
 local run_diff = require('gitsigns.diff')
+local nvim = require('gitsigns.nvim')
 
 local gs_cache = require('gitsigns.cache')
 local cache = gs_cache.cache
@@ -39,6 +40,7 @@ local current_buf = api.nvim_get_current_buf
 
 
 local M = {QFListOpts = {}, }
+
 
 
 
@@ -588,7 +590,7 @@ local function hlmarks_for_hunk(hunk, hl)
       for _, region in ipairs(added_regions) do
          hls[#hls + 1] = {
             hl_group = 'GitSignsAddInline',
-            start_row = region[1] - 1,
+            start_row = region[1] + removed.count - 1,
             start_col = region[3],
             end_col = region[4],
          }
@@ -651,6 +653,30 @@ M.preview_hunk = noautocmd(function()
 
    popup.create(lines_spec, config.preview_config, 'hunk')
 end)
+
+
+M.preview_hunk_inline = function()
+   local bufnr = current_buf()
+
+   local hunk = get_cursor_hunk(bufnr)
+
+   if not hunk then
+      return
+   end
+
+   local nsp = api.nvim_create_namespace('gitsigns_preview_inline')
+
+   manager.show_added(bufnr, nsp, hunk)
+   manager.show_deleted(bufnr, nsp, hunk)
+
+   nvim.autocmd({ 'CursorMoved', 'InsertEnter' }, {
+      callback = function()
+         api.nvim_buf_clear_namespace(bufnr, nsp, 0, -1)
+      end,
+      once = true,
+   })
+
+end
 
 
 M.select_hunk = function()

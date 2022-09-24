@@ -76,7 +76,7 @@ local record api
   nvim_buf_attach: function(number, boolean, {string:any}): boolean
   nvim_buf_call: function(number, function)
   nvim_buf_clear_highlight: function(number, number, number, number)
-  nvim_buf_clear_namespace: function(number, number, number, number)
+  nvim_buf_clear_namespace: function(integer, integer, integer, integer)
   nvim_buf_del_extmark: function(number, number, number): boolean
   nvim_buf_del_keymap: function(number, string, string)
   nvim_buf_del_var: function(number, string)
